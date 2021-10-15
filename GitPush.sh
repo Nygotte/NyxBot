@@ -7,4 +7,4 @@ git commit -m "NyxBot"
 git branch -M master
 git config --global user.email "ny.lucax@gmail.com" 
 git remote add origin https://github.com/Nygotte/Nyx.git
-git push -f origin master 
+git push origin master 
