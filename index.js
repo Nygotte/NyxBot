@@ -80,6 +80,11 @@ async function starts() {
     align: 'center',
     gradient: ['green', 'magenta']
     })
+    CFonts.say('Bot', {
+    font: 'block',
+    align: 'center',
+    gradient: ['green', 'magenta']
+    })
     CFonts.say('Por @ny.lucax', {
     font: 'console',
     align: 'center',
@@ -133,31 +138,23 @@ async function starts() {
 			const args = body.trim().split(/ +/).slice(1)
 			const isCmd = body.startsWith(prefix)
             const q = args.join(' ')
-
-			mess = {
-				wait: '⏱️ Processando... ',
-				error: {
-					stick: '‼️ Ocorreu um erro ao converter. ',
-				} 
-			}
-			
 			const isGroup = from.endsWith('@g.us')
 			const groupMetadata = isGroup ? await client.groupMetadata(from) : ''
 			const groupName = isGroup ? groupMetadata.subject : ''
 			const sender = isGroup ? m.participant : m.key.remoteJid
 			const isSimi = isGroup ? samih.includes(from) : false
 			const getNumber = sender.split('@')[0]
+			const isMedia = (type === 'imageMessage' || type === 'videoMessage')
+			const isVideo = (type === 'videoMessage')
+			const isImage = (type === 'imageMessage')
+			const isQuotedImage = type === 'extendedTextMessage' && content.includes('imageMessage')
+			const isQuotedVideo = type === 'extendedTextMessage' && content.includes('videoMessage')
+			const isQuotedSticker = type === 'extendedTextMessage' && content.includes('stickerMessage')
 			pushname = client.contacts[sender] != undefined ? client.contacts[sender].vname || client.contacts[sender].notify : getNumber
 			
 			const reply = (teks) => {
 				client.sendMessage(from, teks, text)
 			}
-
-			colors = ['red','white','black','blue','yellow','green']
-			const isMedia = (type === 'imageMessage' || type === 'videoMessage')
-			const isQuotedImage = type === 'extendedTextMessage' && content.includes('imageMessage')
-			const isQuotedVideo = type === 'extendedTextMessage' && content.includes('videoMessage')
-			const isQuotedSticker = type === 'extendedTextMessage' && content.includes('stickerMessage')
 			
 			// ping
 
@@ -177,69 +174,137 @@ async function starts() {
 			switch(command) { 
 				
 				case '':
-
-          			if (isGroup) {
-
-          			} else {
-
-						async function runSample(projectId = 'nyxbot-juvp') {
-							// A unique identifier for the given session
-							const sessionId = uuid.v4();
-
-							// Create a new session
-							const sessionClient = new dialogflow.SessionsClient({
-						
-							keyFilename: "./database/DialogFlow.json"
-						
-							});
-
-							const sessionPath = sessionClient.projectAgentSessionPath(
-
-								projectId,
-								sessionId
-
-							);
-
-							// The text query request.
-							const request = {
-								session: sessionPath,
-								queryInput: {
-								text: {
-									// The query to send to the dialogflow agent
-									text: `${budy}`,
-									// The language used by the client (en-US)
-									languageCode: 'pt-BR',
-								},
-								},
-							};
-
-							// Send request and log result
-							const responses = await sessionClient.detectIntent(request);
-							const result = responses[0].queryResult;
 					
-							reply(`${result.fulfillmentText}`) 
-					
-					
-							if (result.intent) {
+					if (!isGroup && isMedia) {
 						
-							} else {
+						if ((isMedia && !m.message.videoMessage || isQuotedImage) && args.length == 0) {
+						
+						const savedFilename = media = await client.downloadAndSaveMediaMessage(m, `./${getNumber}`)
+						client.sendMessage(from, 'Iniciando Requisição... ', text)
 
-							console.log(' No intent matched.');
+            			const result = webp.cwebp(`./${media}`,`${getNumber}.webp`,"-q 80",logging="-v");
+
+            			result.then((response) => {
+              
+              				client.sendMessage(from, { url: getNumber + ".webp" }, sticker, {quoted: { key: { fromMe: true, ...(from ? { remoteJid: from } : {}) }, message: { conversation: `${finish}` }}})
+
+              				try {
+										
+								fs.unlinkSync(getNumber + ".jpeg");
+
+							} catch (error) {
 
 							}
-						} 
-						runSample() 
-						break
 
+            			});
+								
 					}
+
+					if ((isMedia && m.message.videoMessage.seconds > 9 || isQuotedVideo && m.message.extendedTextMessage.contextInfo.quotedMessage.videoMessage.seconds > 9) && args.length == 0) {
+								
+						reply('Indentificamos que o tamanho(Mb) do vídeo requisitado é muito grande, por favo diminua seu vídeo e tente novamente! ')
+								
+					}else if ((isMedia && m.message.videoMessage.seconds < 10 || isQuotedVideo && m.message.extendedTextMessage.contextInfo.quotedMessage.videoMessage.seconds < 10) && args.length == 0) {
+								
+						const media = await client.downloadAndSaveMediaMessage(m, getNumber)
+
+        				savewebp = (`${getNumber}.webp`)
+
+						client.sendMessage(from, 'Iniciando requisição... ', text)
+						client.sendMessage(from, 'Esse processo costuma demora, por favor tenha paciência.\nEnquanto isso, visite nosso Instagram: https://www.instagram.com/nyxbot_/', text)
+
+    						ffmpeg(media)
+    						.outputOption(`-vcodec`, `libwebp`, `-vf`, `scale=320:320,setsar=1,fps=15`, `-preset`, `default`, `-an`, `-vsync`, `0`)
+    						.save(savewebp).on('error', function (err) {
+									
+								console.log(`Error : ${err}`)
+								try {
+											
+									fs.unlinkSync(getNumber + ".mp4" );
+									
+								} catch (error) {
+									reply("😵 Calma aí, não consigo processar tudo isso ao mesmo tempo, vamos com calma!")
+								}
+								tipe = media.endsWith('.mp4') ? 'video' : 'gif'
+								reply("‼️ Ocorreu um erro ao converter.")
+									
+							})
+							.on('end', function () {
+
+								client.sendMessage(from, { url: getNumber + ".webp" }, sticker, {quoted: { key: { fromMe: true, ...(from ? { remoteJid: from } : {}) }, message: { conversation: `${finish}` }}})
+
+								try {
+											
+									fs.unlinkSync(getNumber + ".mp4" );
+									
+								} catch (error) {
+									reply("😵 Calma aí, não consigo processar tudo isso ao mesmo tempo, vamos com calma!")
+								}
+
+                			});	
+                
+						}
+						break
+						
+					}
+					else {
+					
+						if (!isGroup) {
+
+							async function runSample(projectId = 'nyxbot-juvp') {
+								
+								const sessionId = uuid.v4();
+								const sessionClient = new dialogflow.SessionsClient({
+						
+									keyFilename: "./database/DialogFlow.json"
+						
+								});
+
+								const sessionPath = sessionClient.projectAgentSessionPath(
+
+									projectId,
+									sessionId
+
+								);
+								
+								const request = {
+									session: sessionPath,
+									queryInput: {
+										text: {
+											text: `${budy}`,
+											languageCode: 'pt-BR',
+										},
+									},
+								};
+
+								const responses = await sessionClient.detectIntent(request);
+								const result = responses[0].queryResult;
+					
+								reply(`${result.fulfillmentText}`) 
+					
+					
+								if (result.intent) {
+						
+									} else {
+
+										console.log(' No intent matched.');
+
+									}
+								} 
+								runSample() 
+								break
+
+						}
+					}
+					
 					break
-				
+
 				case 'ajuda':
                 case 'help':
                 
 					const buttons = [
 						{buttonId: '$ajuda', buttonText: {displayText: "❔AJUDA❔"}, type: 1},
-						{buttonId: '$adesivos', buttonText: {displayText: "🖼️ ADESIVOS 🖼️"}, type: 1},
+						{buttonId: '$adesivo', buttonText: {displayText: "🖼️ ADESIVOS 🖼️"}, type: 1},
 						{buttonId: '$nextpage', buttonText: {displayText: "➡️ PRÓXIMA PÁGINA ➡️"}, type: 1}
 					]
 					
@@ -323,7 +388,6 @@ async function starts() {
 					break
 				
 				case 'doação':
-				case 'pix':
 					
 					client.sendMessage(from, pix_txt(pushname, botName, ownerName), text)
 					client.sendMessage(from, 'Chave Aleatória:' , text)
@@ -331,11 +395,11 @@ async function starts() {
 					break
 					
 				case 'sticker':
-				case 'adesivos':
+				case 'adesivo':
 
 					if (!isMedia) {
 						
-						client.sendMessage(from, `Está tentando criar um adesivo?\n\nPara fazer um adesivo você deve escolher uma foto, vídeo ou gif e colocar a seguinte legenda:\n$sticker ou $adesivos e enviar.` , text)
+						client.sendMessage(from, `Está tentando criar um adesivo?\n\nPara fazer um adesivo você deve escolher uma foto, vídeo ou gif e colocar a seguinte legenda:\n$sticker ou $adesivo e enviar.` , text)
 					} 
 					
 					if ((isMedia && !m.message.videoMessage || isQuotedImage) && args.length == 0) {
@@ -353,10 +417,8 @@ async function starts() {
 										
 								fs.unlinkSync(getNumber + ".jpeg");
 
-                				console.log("File is deleted.");
-
 							} catch (error) {
-
+								reply("😵 Calma aí, não consigo processar tudo isso ao mesmo tempo, vamos com calma!")
 							}
 
             			});
@@ -374,16 +436,22 @@ async function starts() {
         				savewebp = (`${getNumber}.webp`)
 
 						client.sendMessage(from, 'Iniciando requisição... ', text)
-						client.sendMessage(from, 'Esse processo costuma demora, por favor tenha paciência.\nEnquanto isso visite nosso Instagram: https://www.instagram.com/nyxbot_/', text)
+						client.sendMessage(from, 'Esse processo costuma demora, por favor tenha paciência.\nEnquanto isso, visite nosso Instagram: https://www.instagram.com/nyxbot_/', text)
 
     						ffmpeg(media)
     						.outputOption(`-vcodec`, `libwebp`, `-vf`, `scale=320:320,setsar=1,fps=15`, `-preset`, `default`, `-an`, `-vsync`, `0`)
     						.save(savewebp).on('error', function (err) {
 									
 								console.log(`Error : ${err}`)
-								fs.unlinkSync(media)
+								try {
+											
+									fs.unlinkSync(getNumber + ".mp4" );
+									
+								} catch (error) {
+									reply("😵 Calma aí, não consigo processar tudo isso ao mesmo tempo, vamos com calma!")
+								}
 								tipe = media.endsWith('.mp4') ? 'video' : 'gif'
-								reply(mess.error.stick)
+								reply("‼️ Ocorreu um erro ao converter.")
 									
 							})
 							.on('end', function () {
@@ -393,11 +461,11 @@ async function starts() {
 								try {
 											
 									fs.unlinkSync(getNumber + ".mp4" );
-
-									console.log("File is deleted.");
-
+									
 								} catch (error) {
-								
+									
+									reply("😵 Calma aí, não consigo processar tudo isso ao mesmo tempo, vamos com calma!")
+									
 								}
 
                 			});	
