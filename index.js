@@ -48,7 +48,6 @@ const app = express();
 //load json
 const samih = JSON.parse(fs.readFileSync('./database/simi.json'))
 const option = JSON.parse(fs.readFileSync('./options/option.json'))
-const scommand = JSON.parse(fs.readFileSync('./database/scommand.json'))
 
 let { spawn } = require('child_process')
 let path = require('path')
@@ -202,7 +201,7 @@ async function starts() {
 
 					if ((isMedia && m.message.videoMessage.seconds > 9 || isQuotedVideo && m.message.extendedTextMessage.contextInfo.quotedMessage.videoMessage.seconds > 9) && args.length == 0) {
 								
-						reply('Indentificamos que o tamanho(Mb) do vídeo requisitado é muito grande, por favo diminua seu vídeo e tente novamente! ')
+	reply('Indentificamos que o tamanho do vídeo requisitado é muito grande, mande no máximo um vídeo de nove segundos para que possamos reconhecê-lo!')
 								
 					}else if ((isMedia && m.message.videoMessage.seconds < 10 || isQuotedVideo && m.message.extendedTextMessage.contextInfo.quotedMessage.videoMessage.seconds < 10) && args.length == 0) {
 								
@@ -346,8 +345,20 @@ async function starts() {
 				
 				case 'info':
 
-                	client.sendMessage(from, criador(pushname, botName, ownerName), text)
-                	break
+					const doacoes = [
+						{buttonId: '$doação', buttonText: {displayText: "🥺 DOAÇÕES 🥺"}, type: 1},
+					]
+					
+					const sendDoacoes = {
+						
+						contentText: `${criador(pushname, botName, ownerName)}`,
+    					buttons: doacoes,
+    					headerType: 1
+    
+					}
+					client.sendMessage(from, sendDoacoes, MessageType.buttonsMessage) 
+
+               	break
                 
                 case 'nyx':
                 
@@ -397,9 +408,15 @@ async function starts() {
 				case 'sticker':
 				case 'adesivo':
 
+					if (!isGroup) {
+
+						reply(`Olá ${pushname}\n\nVocê sabia que em conversas privadas não precisa adicionar ($sticker) na descrição da mídia?\n\nBasta você enviar apenas a mídia que Imediatamente iremos reconhecer sua requisição!`)
+						
+					}
+
 					if (!isMedia) {
 						
-						client.sendMessage(from, `Está tentando criar um adesivo?\n\nPara fazer um adesivo você deve escolher uma foto, vídeo ou gif e colocar a seguinte legenda:\n$sticker ou $adesivo e enviar.` , text)
+						client.sendMessage(from, `Olá ${pushname}!\n\nEstá tentando criar um adesivo?\n\nEstamos com um novo sistema de adesivos, em chats privados você pode apenas enviar a imagem, vídeo ou gif, que iremos processar sua requisição imediatamente.\n\nJá em grupos, você deve adicionar $sticker ou $adesivos na legenda do arquivo para que possamos reconhecer sua requisição.` , text)
 					} 
 					
 					if ((isMedia && !m.message.videoMessage || isQuotedImage) && args.length == 0) {
@@ -427,7 +444,7 @@ async function starts() {
 
 					if ((isMedia && m.message.videoMessage.seconds > 9 || isQuotedVideo && m.message.extendedTextMessage.contextInfo.quotedMessage.videoMessage.seconds > 9) && args.length == 0) {
 								
-						reply('Indentificamos que o tamanho(Mb) do vídeo requisitado é muito grande, por favo diminua seu vídeo e tente novamente! ')
+						reply('Indentificamos que o tamanho do vídeo requisitado é muito grande, mande no máximo um vídeo de nove segundos para que possamos reconhecê-lo!')
 								
 					}else if ((isMedia && m.message.videoMessage.seconds < 10 || isQuotedVideo && m.message.extendedTextMessage.contextInfo.quotedMessage.videoMessage.seconds < 10) && args.length == 0) {
 								
