@@ -302,9 +302,9 @@ async function starts() {
                 case 'help':
                 
 					const buttons = [
-						{buttonId: '$ajuda', buttonText: {displayText: "❔AJUDA❔"}, type: 1},
-						{buttonId: '$adesivo', buttonText: {displayText: "🖼️ ADESIVOS 🖼️"}, type: 1},
-						{buttonId: '$nextpage', buttonText: {displayText: "➡️ PRÓXIMA PÁGINA ➡️"}, type: 1}
+						{buttonId: '$ajuda', buttonText: {displayText: "❔AJUDA"}, type: 1},
+						{buttonId: '$adesivo', buttonText: {displayText: "🌃 ADESIVOS "}, type: 1},
+						{buttonId: '$nextpage', buttonText: {displayText: "⏭️ PRÓXIMA PÁGINA "}, type: 1}
 					]
 					
 					const ajuda = {
@@ -322,9 +322,9 @@ async function starts() {
 				case 'nextpage':
 				
 					const buttons1 = [
-						{buttonId: '$faq', buttonText: {displayText: "❕PERGUNTAS FREQUENTES❕"}, type: 1},
-						{buttonId: '$doação', buttonText: {displayText: "🥺 DOAÇÕES 🥺"}, type: 1},
-						{buttonId: '$info', buttonText: {displayText: "💬 INFORMAÇÕES 💬"}, type: 1}
+						{buttonId: '$faq', buttonText: {displayText: "📃PERGUNTAS FREQUENTES"}, type: 1},
+						{buttonId: '$doação', buttonText: {displayText: "💰 DOAÇÕES "}, type: 1},
+						{buttonId: '$info', buttonText: {displayText: "📄 INFORMAÇÕES "}, type: 1}
 					]
 
 					const nextpage = {
@@ -346,7 +346,7 @@ async function starts() {
 				case 'info':
 
 					const doacoes = [
-						{buttonId: '$doação', buttonText: {displayText: "🥺 DOAÇÕES 🥺"}, type: 1},
+						{buttonId: '$doação', buttonText: {displayText: "💰 DOAÇÕES "}, type: 1},
 					]
 					
 					const sendDoacoes = {
@@ -395,7 +395,7 @@ async function starts() {
                        
 				case 'faq':
 				
-					client.sendMessage(from, faq(pushname, ownerName), text)
+					client.sendMessage(from, faq(pushname), text)
 					break
 				
 				case 'doação':
