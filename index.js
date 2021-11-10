@@ -56,7 +56,6 @@ const CFonts  = require('cfonts')
 const {
     botName,
     ownerName,
-    BarBarKey,
     ownerNumber,
     pix
 } = option
@@ -98,7 +97,7 @@ async function starts() {
 	const client = new WAConnection()
 	client.logger.level = 'warn'
 	client.on('qr', () => {
-		console.log(color('[','white'), color('!','red'), color(']','white'), color(' Scan the qr code above'))
+		console.log(color('[','white'), color('!','red'), color(']','white'), color(' Leia o codigo qr acima no seu whatsapp para conectar'))
 	})
 	
 	fs.existsSync('./database/auth.json') && client.loadAuthInfo('./database/auth.json')
