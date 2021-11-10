@@ -113,6 +113,17 @@ async function starts() {
 	await client.connect({timeoutMs: 30*1000})
         fs.writeFileSync('./database/auth.json', JSON.stringify(client.base64EncodedAuthInfo(), null, '\t'))
         
+	// ping
+
+			app.get("/", (request, response) => {
+  
+				const ping = new Date();
+				ping.setHours(ping.getHours() - 3);
+				client.setStatus(`Ping recebido às ${ping.getUTCHours()}:${ping.getUTCMinutes()}:${ping.getUTCSeconds()}`)
+				response.sendStatus(200);
+			
+			});
+			app.listen(process.env.PORT); 
 
 	client.on('chat-update', async m => {
 	
@@ -155,18 +166,6 @@ async function starts() {
 				client.sendMessage(from, teks, text)
 			}
 			
-			// ping
-
-			app.get("/", (request, response) => {
-  
-				const ping = new Date();
-				ping.setHours(ping.getHours() - 3);
-				console.log(`Ping recebido às ${ping.getUTCHours()}:${ping.getUTCMinutes()}:${ping.getUTCSeconds()}`);
-				client.setStatus(`Ping recebido às ${ping.getUTCHours()}:${ping.getUTCMinutes()}:${ping.getUTCSeconds()}`)
-				response.sendStatus(200);
-			
-			});
-			app.listen(process.env.PORT); 
 			
 			
             //Comandos
